@@ -82,11 +82,33 @@ We use optimal policy trees (OPT) to determine the effectiveness of classes for 
 - Propensity score estimation: We use the area under the curve (AUC) criterion for evaluation. This is appropriate since the outcome is binary.
 - Outcome estimation: We use the Tweedie metric for evaluation. This is because the outcome has a continuous distribution on positive values, except for a spike observed at exactly zero corresponding to “perfectly healthy” individuals. The Tweedie distribution accounts for this by modelling the number of unhealthy days as the sum of a Poisson number of independent Gamma variables.
 
+| 𝜆 | Propensity (AUC) | Treatment (Tweedie) | Non-treatment (Tweedie) |
+| :---: |:---:| :---:| :---:|
+| 0   | 0.613 | 0.255 | 0.215 |
+| 0.2 | 0.613 | 0.300 | 0.292 |
+| 0.4 | 0.613 | 0.325 | 0.314 |
+| 0.6 | 0.613 | 0.346 | 0.336 |
+| 0.8 | 0.613 | 0.362 | 0.354 |
+| 1.0 | 0.613 | 0.368 | 0.366 |
+
+Table 1: Evaluation metrics for different models (training data).
+
 The evaluation metrics for our best models for various values of 𝜆 are summarized in Table 1, which are XGBoost models in all instances. The metrics appear reasonable for our purpose, particularly given that the doubly-robust estimation method is designed to deliver good results if either propensity scores or outcomes are estimated well. We note that the Tweedie metric is weaker for lower values of 𝜆 (more weight to mental health). This is intuitive, as mental health lacks the established biomarkers of physical health outcomes, and is instead affected by intricate cognitive and emotional processes, personal histories, and external stressors. Nevertheless, we choose to include mental health in our analysis as we believe it is a crucial aspect of well-being that should be further studied.
 
 ### Learn Optimal Policy
 
 We learn an optimal policy tree that recommends whether an individual should take the class, based on their characteristics, with the objective of minimizing the outcome variable.
+
+| 𝜆 | Propensity (AUC) | Treatment (Tweedie) | Non-treatment (Tweedie) |
+| :---: |:---:| :---:| :---:|
+| 0   | 0.589 | 0.255 | 0.256 |
+| 0.2 | 0.589 | 0.296 | 0.302 |
+| 0.4 | 0.589 | 0.315 | 0.315 |
+| 0.6 | 0.589 | 0.330 | 0.334 |
+| 0.8 | 0.589 | 0.344 | 0.346 |
+| 1.0 | 0.589 | 0.357 | 0.348 |
+
+Table 2: Evaluation metrics for different models (test data).
 
 ### Estimate Testing Rewards
 
@@ -97,6 +119,17 @@ For fair evaluation of the policy tree, we estimate a new set of rewards using o
 We evaluate the quality of the policy tree prescriptions using the test set estimated rewards. We compare average predicted outcomes under the prescribed treatments (“Prescribed”) to the average outcomes actually observed (“Actual”) across the test set.
 
 Table 3 illustrates outcomes, showing a material improvement under the prescribed policies. This is most pronounced for mental health outcomes. Despite the prior observation of the models being less predictive for this outcome, this remains a notable finding as it supports the recent focus on emphasizing resilience and coping strategies in self-management curricula.
+
+| 𝜆 | Actual (days) | Prescribed (days) | Improvement (%) |
+| :---: |:---:| :---:| :---:|
+| 0   | 5.51 | 4.47 | 23% |
+| 0.2 | 5.73 | 5.01 | 14% |
+| 0.4 | 6.16 | 5.71 | 8% |
+| 0.6 | 6.65 | 6.20 | 7% |
+| 0.8 | 7.22 | 6.58 | 10% |
+| 1.0 | 7.72 | 7.15 | 8% |
+
+Table 3: Comparison of prescribed and actual outcomes.
 
 ## Insights
 
